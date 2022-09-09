@@ -24,6 +24,7 @@ namespace BAMCIS.PrestoClient
         private static readonly string _DEFAULT_HOST = "localhost";
         private static readonly int _DEFAULT_PORT = 8080;
         private static readonly long _DEFAULT_TIMEOUT = -1; // Anything 0 or below indicates that the client will never timeout a query
+        private static readonly string _DEFAULT_HEADER_PREFIX = "presto";
 
         #endregion
 
@@ -101,6 +102,11 @@ namespace BAMCIS.PrestoClient
         /// The schema to connect to in presto. This defaults to 'default'.
         /// </summary>
         public string Schema { get; set; }
+
+        /// <summary>
+        /// The Header prefix to toggle between connecting to Presto vs Trino
+        /// </summary>
+        public string HeaderPrefix { get; set; }
 
         /// <summary>
         /// The amount of time in milliseconds that the client will wait in between
@@ -286,6 +292,7 @@ namespace BAMCIS.PrestoClient
             this.TimeZone = TimeZoneKey.GetTimeZoneKey(0);
             this.Locale = CultureInfo.CurrentCulture;
             this.ClientRequestTimeout = _DEFAULT_TIMEOUT;
+            this.HeaderPrefix = _DEFAULT_HEADER_PREFIX;
         }
 
         /// <summary>

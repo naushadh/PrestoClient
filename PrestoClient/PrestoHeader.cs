@@ -6,43 +6,43 @@
     /// </summary>
     public class PrestoHeader
     {
-        private PrestoHeader(string value) { Value = value; }
+        public PrestoHeader(string prefix) { Prefix = prefix; }
 
-        public string Value { get; set; }
+        public string Prefix { get; }
 
-        public static readonly PrestoHeader PRESTO_USER = new PrestoHeader("X-Presto-User");
-        public static readonly PrestoHeader PRESTO_SOURCE = new PrestoHeader("X-Presto-Source");
-        public static readonly PrestoHeader PRESTO_CATALOG = new PrestoHeader("X-Presto-Catalog");
-        public static readonly PrestoHeader PRESTO_SCHEMA = new PrestoHeader("X-Presto-Schema");
-        public static readonly PrestoHeader PRESTO_TIME_ZONE = new PrestoHeader("X-Presto-Time-Zone");
-        public static readonly PrestoHeader PRESTO_LANGUAGE = new PrestoHeader("X-Presto-Language");
-        public static readonly PrestoHeader PRESTO_SESSION = new PrestoHeader("X-Presto-Session");
-        public static readonly PrestoHeader PRESTO_SET_CATALOG = new PrestoHeader("X-Presto-Set-Catalog");
-        public static readonly PrestoHeader PRESTO_SET_SCHEMA = new PrestoHeader("X-Presto-Set-Schema");
-        public static readonly PrestoHeader PRESTO_SET_SESSION = new PrestoHeader("X-Presto-Set-Session");
-        public static readonly PrestoHeader PRESTO_CLEAR_SESSION = new PrestoHeader("X-Presto-Clear-Session");
-        public static readonly PrestoHeader PRESTO_PREPARED_STATEMENT = new PrestoHeader("X-Presto-Prepared-Statement");
-        public static readonly PrestoHeader PRESTO_ADDED_PREPARE = new PrestoHeader("X-Presto-Added-Prepare");
-        public static readonly PrestoHeader PRESTO_DEALLOCATED_PREPARE = new PrestoHeader("X-Presto-Deallocated-Prepare");
-        public static readonly PrestoHeader PRESTO_TRANSACTION_ID = new PrestoHeader("X-Presto-Transaction-Id");
-        public static readonly PrestoHeader PRESTO_STARTED_TRANSACTION_ID = new PrestoHeader("X-Presto-Started-Transaction-Id");
-        public static readonly PrestoHeader PRESTO_CLEAR_TRANSACTION_ID = new PrestoHeader("X-Presto-Clear-Transaction-Id");
-        public static readonly PrestoHeader PRESTO_CLIENT_INFO = new PrestoHeader("X-Presto-Client-Info");
-        public static readonly PrestoHeader PRESTO_CLIENT_TAGS = new PrestoHeader("X-Presto-Client-Tags");
+        public string User() { return $"X-{Prefix}-User"; }
+        public string Source() { return $"X-{Prefix}-Source"; }
+        public string Catalog() { return $"X-{Prefix}-Catalog"; }
+        public string Schema() { return $"X-{Prefix}-Schema"; }
+        public string TimeZone() { return $"X-{Prefix}-Time-Zone"; }
+        public string Language() { return $"X-{Prefix}-Language"; }
+        public string Session() { return $"X-{Prefix}-Session"; }
+        public string SetCatalog() { return $"X-{Prefix}-Set-Catalog"; }
+        public string SetSchema() { return $"X-{Prefix}-Set-Schema"; }
+        public string SetSession() { return $"X-{Prefix}-Set-Session"; }
+        public string ClearSession() { return $"X-{Prefix}-Clear-Session"; }
+        public string PreparedStatement() { return $"X-{Prefix}-Prepared-Statement"; }
+        public string AddedPrepare() { return $"X-{Prefix}-Added-Prepare"; }
+        public string DeallocatedPrepare() { return $"X-{Prefix}-Deallocated-Prepare"; }
+        public string TransactionId() { return $"X-{Prefix}-Transaction-Id"; }
+        public string StartedTransactionId() { return $"X-{Prefix}-Started-Transaction-Id"; }
+        public string ClearTransactionId() { return $"X-{Prefix}-Clear-Transaction-Id"; }
+        public string ClientInfo() { return $"X-{Prefix}-Client-Info"; }
+        public string ClientTags() { return $"X-{Prefix}-Client-Tags"; }
 
-        public static readonly PrestoHeader PRESTO_CURRENT_STATE = new PrestoHeader("X-Presto-Current-State");
-        public static readonly PrestoHeader PRESTO_MAX_WAIT = new PrestoHeader("X-Presto-Max-Wait");
-        public static readonly PrestoHeader PRESTO_MAX_SIZE = new PrestoHeader("X-Presto-Max-Size");
-        public static readonly PrestoHeader PRESTO_TASK_INSTANCE_ID = new PrestoHeader("X-Presto-Task-Instance-Id");
-        public static readonly PrestoHeader PRESTO_PAGE_TOKEN = new PrestoHeader("X-Presto-Page-Sequence-Id");
-        public static readonly PrestoHeader PRESTO_PAGE_NEXT_TOKEN = new PrestoHeader("X-Presto-Page-End-Sequence-Id");
-        public static readonly PrestoHeader PRESTO_BUFFER_COMPLETE = new PrestoHeader("X-Presto-Buffer-Complete");
+        public string CurrentState() { return $"X-{Prefix}-Current-State"; }
+        public string MaxWait() { return $"X-{Prefix}-Max-Wait"; }
+        public string MaxSize() { return $"X-{Prefix}-Max-Size"; }
+        public string TaskInstanceId() { return $"X-{Prefix}-Task-Instance-Id"; }
+        public string PageToken() { return $"X-{Prefix}-Page-Sequence-Id"; }
+        public string PageNextToken() { return $"X-{Prefix}-Page-End-Sequence-Id"; }
+        public string BufferComplete() { return $"X-{Prefix}-Buffer-Complete"; }
 
-        public static readonly PrestoHeader PRESTO_DATA_NEXT_URI = new PrestoHeader("X-Presto-Data-Next-Uri");
+        public string DataNextUri() { return $"X-{Prefix}-Data-Next-Uri"; }
 
         public override string ToString()
         {
-            return this.Value;
+            return this.Prefix;
         }
     }
 }

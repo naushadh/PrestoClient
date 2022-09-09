@@ -59,6 +59,11 @@ namespace BAMCIS.PrestoClient
         private HttpClient IgnoreSslErrorClient;
 
         /// <summary>
+        /// Header prefix helper to toggle between connecting to Presto vs Trino
+        /// </summary>
+        private PrestoHeader PrestoHeader;
+
+        /// <summary>
         /// Initializes HTTP Handler and Client
         /// </summary>
         private void InitializeHttpClients()
@@ -95,6 +100,7 @@ namespace BAMCIS.PrestoClient
 
             this.NormalClient = new HttpClient(this.NormalHandler);
             this.IgnoreSslErrorClient = new HttpClient(this.IgnoreSslErrorHandler);
+            this.PrestoHeader = new PrestoHeader(this.Configuration.HeaderPrefix);
         }
 
         #endregion
@@ -812,9 +818,9 @@ namespace BAMCIS.PrestoClient
                                             DataRows.Add(Row);
                                         }
 
-                                        if (DataResponse.Headers.Contains(PrestoHeader.PRESTO_DATA_NEXT_URI.Value))
+                                        if (DataResponse.Headers.Contains(this.PrestoHeader.DataNextUri()))
                                         {
-                                            NextDataUri = new Uri(DataResponse.Headers.GetValues(PrestoHeader.PRESTO_DATA_NEXT_URI.Value).First());
+                                            NextDataUri = new Uri(DataResponse.Headers.GetValues(this.PrestoHeader.DataNextUri()).First());
                                         }
                                         else
                                         {
@@ -1051,30 +1057,30 @@ namespace BAMCIS.PrestoClient
             request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/json");
 
             // Timezone will always be set
-            request.Headers.Add(PrestoHeader.PRESTO_TIME_ZONE.Value, this.Configuration.TimeZone.Id);
+            request.Headers.Add(this.PrestoHeader.TimeZone(), this.Configuration.TimeZone.Id);
 
             // Catalog
             if (!String.IsNullOrEmpty(this.Configuration.Catalog))
             {
-                request.Headers.Add(PrestoHeader.PRESTO_CATALOG.Value, this.Configuration.Catalog);
+                request.Headers.Add(this.PrestoHeader.Catalog(), this.Configuration.Catalog);
             }
 
             // Schema
             if (!String.IsNullOrEmpty(this.Configuration.Schema))
             {
-                request.Headers.Add(PrestoHeader.PRESTO_SCHEMA.Value, this.Configuration.Schema);
+                request.Headers.Add(this.PrestoHeader.Schema(), this.Configuration.Schema);
             }
 
             // ClientInfo
             if (!String.IsNullOrEmpty(this.Configuration.ClientInfo))
             {
-                request.Headers.Add(PrestoHeader.PRESTO_CLIENT_INFO.Value, this.Configuration.ClientInfo);
+                request.Headers.Add(this.PrestoHeader.ClientInfo(), this.Configuration.ClientInfo);
             }
 
             // Language
             if (this.Configuration.Locale != null)
             {
-                request.Headers.Add(PrestoHeader.PRESTO_LANGUAGE.Value, this.Configuration.Locale.Name);
+                request.Headers.Add(this.PrestoHeader.Language(), this.Configuration.Locale.Name);
             }
 
             // Session properties
@@ -1082,7 +1088,7 @@ namespace BAMCIS.PrestoClient
             {
                 foreach (KeyValuePair<string, string> Property in this.Configuration.Properties)
                 {
-                    request.Headers.Add(PrestoHeader.PRESTO_SESSION.Value, $"{Property.Key}={Property.Value}");
+                    request.Headers.Add(this.PrestoHeader.Session(), $"{Property.Key}={Property.Value}");
                 }
             }
 
@@ -1140,17 +1146,17 @@ namespace BAMCIS.PrestoClient
                 {
                     foreach (KeyValuePair<string, string> Property in options.Properties)
                     {
-                        request.Headers.Add(PrestoHeader.PRESTO_SESSION.Value, $"{Property.Key}={Property.Value}");
+                        request.Headers.Add(this.PrestoHeader.Session(), $"{Property.Key}={Property.Value}");
                     }
                 }
 
                 if (!String.IsNullOrEmpty(options.TransactionId))
                 {
-                    request.Headers.Add(PrestoHeader.PRESTO_TRANSACTION_ID.Value, options.TransactionId);
+                    request.Headers.Add(this.PrestoHeader.TransactionId(), options.TransactionId);
                 }
                 else
                 {
-                    request.Headers.Add(PrestoHeader.PRESTO_TRANSACTION_ID.Value, "NONE");
+                    request.Headers.Add(this.PrestoHeader.TransactionId(), "NONE");
                 }
             }
 
@@ -1159,14 +1165,14 @@ namespace BAMCIS.PrestoClient
             {
                 foreach (KeyValuePair<string, string> Statement in PreparedStatements)
                 {
-                    request.Headers.Add(PrestoHeader.PRESTO_PREPARED_STATEMENT.Value, $"{WebUtility.UrlDecode(Statement.Key)}={WebUtility.UrlDecode(Statement.Value)}");
+                    request.Headers.Add(this.PrestoHeader.PreparedStatement(), $"{WebUtility.UrlDecode(Statement.Key)}={WebUtility.UrlDecode(Statement.Value)}");
                 }
             }
 
             // If any session or query client tags were provided, add tem
             if (Tags.Any())
             {
-                request.Headers.Add(PrestoHeader.PRESTO_CLIENT_TAGS.Value, String.Join(",", Tags));
+                request.Headers.Add(this.PrestoHeader.ClientTags(), String.Join(",", Tags));
             }
         }
 
@@ -1199,11 +1205,11 @@ namespace BAMCIS.PrestoClient
 
             request.Headers.Add("Accept", "application/json");
             request.Headers.Add("User-Agent", $"bamcis_presto_dotnet_core_sdk/{AssemblyVersion}");
-            request.Headers.Add(PrestoHeader.PRESTO_SOURCE.Value, "bamcis_presto_dotnet_core_sdk");
+            request.Headers.Add(this.PrestoHeader.Source(), "bamcis_presto_dotnet_core_sdk");
 
             if (!String.IsNullOrEmpty(this.Configuration.User))
             {
-                request.Headers.Add(PrestoHeader.PRESTO_USER.Value, this.Configuration.User.Replace(":", ""));
+                request.Headers.Add(this.PrestoHeader.User(), this.Configuration.User.Replace(":", ""));
 
                 if (!String.IsNullOrEmpty(this.Configuration.Password))
                 {
@@ -1221,7 +1227,7 @@ namespace BAMCIS.PrestoClient
         /// <returns>The collection of values that were set by presto in the http headers</returns>
         private ResponseHeaderCollection ProcessResponseHeaders(HttpResponseMessage response)
         {
-            return new ResponseHeaderCollection(response.Headers);
+            return new ResponseHeaderCollection(response.Headers, this.PrestoHeader);
         }
 
         #endregion
